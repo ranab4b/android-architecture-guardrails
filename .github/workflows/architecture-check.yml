@@ -1,0 +1,39 @@
+name: Architecture Check (Konsist)
+
+# Deterministic, hard-fail tier. A real layer-boundary violation fails this build.
+# See solid-review.yml for the separate, advisory-only LLM tier.
+
+on:
+  push:
+    branches: ["main", "demo-violation"]
+  pull_request:
+    branches: ["main"]
+
+permissions:
+  contents: read
+
+jobs:
+  konsist:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "17"
+
+      - name: Set up Gradle
+        uses: gradle/actions/setup-gradle@v4
+
+      - name: Run Konsist architecture tests
+        run: ./gradlew :architecture-tests:test --console=plain
+
+      - name: Upload test report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: architecture-test-report
+          path: architecture-tests/build/reports/tests/test

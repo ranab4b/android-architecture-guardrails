@@ -1,0 +1,18 @@
+name: "SOLID Principle Advisory Reviewer"
+description: "Posts advisory PR comments flagging SOLID principle smells (SRP, OCP, LSP, ISP, DIP). Never fails the build."
+author: "android-architecture-guardrails"
+
+inputs:
+  github-token:
+    description: "Token used to read the PR diff and post the advisory comment."
+    required: true
+  anthropic-api-key:
+    description: >
+      Anthropic API key used for the LLM pass. If omitted, the action logs a notice
+      and exits successfully without posting a comment — it never fails the build
+      just because this secret isn't configured.
+    required: false
+
+runs:
+  using: "node20"
+  main: "dist/index.js"

@@ -1,0 +1,45 @@
+name: SOLID Advisory Review (LLM)
+
+# Advisory-only tier. This workflow can only comment on a PR — it has no permission
+# to set commit statuses or checks, and the reviewer action never calls setFailed(),
+# so it cannot block a merge. See architecture-check.yml for the hard-fail tier.
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+
+permissions:
+  contents: read
+  pull-requests: write
+
+jobs:
+  solid-review:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: npm
+          cache-dependency-path: solid-reviewer-action/package-lock.json
+
+      - name: Install & build reviewer
+        working-directory: solid-reviewer-action
+        run: |
+          npm ci
+          npm run build
+
+      - name: Run SOLID advisory review
+        uses: ./solid-reviewer-action
+        continue-on-error: true # belt-and-suspenders: this step can never fail the job
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          # Add your own key under Settings > Secrets and variables > Actions as
+          # ANTHROPIC_API_KEY to enable this step. Without it, the action logs a
+          # notice and exits successfully — it never fails the build.
+          anthropic-api-key: ${{ secrets.ANTHROPIC_API_KEY }}

@@ -1,0 +1,23 @@
+{
+  "name": "solid-reviewer-action",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Advisory-only GitHub Action that flags SOLID principle smells on a PR diff via an LLM. Never fails the build.",
+  "main": "dist/index.js",
+  "scripts": {
+    "build": "ncc build src/index.ts -o dist -m",
+    "test": "node --import tsx --test src/**/*.test.ts",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@actions/core": "^1.10.1",
+    "@actions/github": "^6.0.0",
+    "@anthropic-ai/sdk": "^0.32.1"
+  },
+  "devDependencies": {
+    "@types/node": "^20.14.0",
+    "@vercel/ncc": "^0.38.1",
+    "tsx": "^4.19.0",
+    "typescript": "^5.5.4"
+  }
+}
