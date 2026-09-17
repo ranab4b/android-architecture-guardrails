@@ -77,8 +77,10 @@ ArchitectureTest > clean architecture layers respect their dependency direction(
 
 ## Demo
 
-- Konsist failing on `demo-violation`: see the [Actions run on that branch](../../actions?query=branch%3Ademo-violation).
-- LLM advisory comment on a PR: see `solid-reviewer-action/` — the workflow runs against any PR that touches `.kt` files, and only produces a comment once `ANTHROPIC_API_KEY` is configured (see Setup below).
+Both proofs below are real, completed GitHub Actions runs on this repo — not staged.
+
+- **Konsist hard-fail**: [PR #2](https://github.com/ranab4b/android-architecture-guardrails/pull/2) (`demo-violation` → `main`) — the `konsist` check fails: [run 35189171834](https://github.com/ranab4b/android-architecture-guardrails/actions/runs/35189171834).
+- **Advisory tier, safe without a key**: [PR #1](https://github.com/ranab4b/android-architecture-guardrails/pull/1) (`solid-smell-demo` → `main`, contains a genuine SRP smell) — `solid-review` passes without posting a comment, because `ANTHROPIC_API_KEY` isn't configured on this repo. Once you add your own key (see Setup), the same workflow will post a comment naming the SRP violation instead of skipping.
 
 ## Stack
 
