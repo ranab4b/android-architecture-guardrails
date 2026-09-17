@@ -20,8 +20,12 @@ class ArchitectureTest {
             val presentation = Layer("Presentation", "..presentation..")
 
             domain.dependsOnNothing()
+
             data.dependsOn(domain)
+            data.doesNotDependOn(presentation)
+
             presentation.dependsOn(domain)
+            presentation.doesNotDependOn(data)
         }
     }
 

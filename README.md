@@ -42,7 +42,7 @@ android-architecture-guardrails/
 
 Five checks in `architecture-tests/src/test/kotlin/ArchitectureTest.kt`, run with `./gradlew :architecture-tests:test`:
 
-1. **Layer dependency direction** — `domain` depends on nothing, `data` depends only on `domain`, `presentation` depends only on `domain`. This is the one that catches "presentation reaching into data directly."
+1. **Layer dependency direction** — `domain` depends on nothing, `data` depends on `domain` and must not depend on `presentation`, `presentation` depends on `domain` and must not depend on `data`. This is the one that catches "presentation reaching into data directly." (Note: Konsist's `dependsOn` only asserts that the allowed dependency exists — it doesn't forbid others by itself, so the exclusion is spelled out explicitly with `doesNotDependOn`.)
 2. Classes ending in `UseCase` reside in a `usecase` package.
 3. Interfaces ending in `Repository` never import framework types (`retrofit2`, `okhttp3`, `android.*`, `androidx.*`) or the `data` package — the domain abstraction has to stay pure.
 4. Classes ending in `RepositoryImpl` live in `data`'s `repository` package and actually implement a `Repository` interface.
@@ -62,7 +62,15 @@ BUILD SUCCESSFUL — all 5 checks pass
 
 $ ./gradlew :architecture-tests:test   # on demo-violation
 BUILD FAILED
-> Layer 'Presentation' must depend on 'Domain' only, but it also depends on 'Data'
+
+ArchitectureTest > clean architecture layers respect their dependency direction() FAILED
+    com.lemonappdev.konsist.core.exception.KoAssertionFailedException: 'clean architecture
+    layers respect their dependency direction' test has failed.
+    'Presentation' layer does not depends on 'Data' layer failed. Files that depend on
+    'Data' layer:
+    └── File .../presentation/viewmodel/UserProfileViewModel.kt
+        ├── Import com.guardrails.data.remote.UserApiClient (...:3:1)
+        └── Import com.guardrails.data.repository.UserRepositoryImpl (...:4:1)
 ```
 
 `.github/workflows/architecture-check.yml` runs on push to both `main` and `demo-violation`, so the same failure is reproducible in CI — see the Actions tab on the `demo-violation` branch for the run.
